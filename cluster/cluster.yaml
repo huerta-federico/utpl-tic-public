@@ -1,0 +1,40 @@
+apiVersion: eksctl.io/v1alpha5
+kind: ClusterConfig
+
+metadata:
+  name: my-cluster
+  region: region-code
+  version: "1.32"
+
+iam:
+  withOIDC: true # Necesario para addons como AWS Load Balancer Controller
+
+addons:
+  - name: vpc-cni # Necesario para redes de EKS
+    version: latest
+  - name: kube-proxy
+    version: latest
+  - name: coredns
+    version: latest
+  - name: aws-ebs-csi-driver # Habilita aprovisionamiento dinámico de dynamic PVC
+    version: latest
+    attachPolicyARNs:
+      - arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy
+  - name: metrics-server # Para HPA y metricas
+    version: latest
+
+managedNodeGroups:
+  - name: node-group
+    instanceType: t3.large
+    desiredCapacity: 3
+    minSize: 3
+    maxSize: 6
+    volumeSize: 30
+    volumeEncrypted: true
+    ssh:
+      allow: true
+    iam:
+      withAddonPolicies:
+        autoScaler: true
+        albIngress: true
+        ebs: true

@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: turn-rest-api
+  namespace: talk
+  labels:
+    app: turn-rest-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: turn-rest-api
+  template:
+    metadata:
+      labels:
+        app: turn-rest-api
+    spec:
+      containers:
+        - name: turn-rest-api
+          image: user/image:tag
+          ports:
+            - containerPort: 8080
+          env:
+            - name: TURN_REST_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: talk-secret
+                  key: TURN_REST_API_KEY
+            - name: TURN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: talk-secret
+                  key: TURN_SECRET
+            - name: TURN_REALM
+              value: "dominio_de_turn.com"
+            - name: TURN_URI
+              value: "turn:dominio_de_turn.com:puerto?transport=udp"
+            - name: TURN_TTL
+              value: "3600"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "64Mi"
+            limits:
+              cpu: "250m"
+              memory: "128Mi"

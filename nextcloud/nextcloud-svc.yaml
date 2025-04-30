@@ -1,0 +1,14 @@
+# Nextcloud Services
+# Permite acceder a la aplicación Nextcloud dentro del clúster a través de un nombre DNS interno y un puerto específico.
+apiVersion: v1
+kind: Service
+metadata:
+  name: nextcloud-service
+  namespace: nextcloud
+spec:
+  type: ClusterIP
+  selector:
+    app: nextcloud
+  ports:
+  - port: 80
+    targetPort: 80

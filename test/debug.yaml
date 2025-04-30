@@ -1,0 +1,31 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: debug
+  namespace: nextcloud
+spec:
+  restartPolicy: Never
+  containers:
+    - name: alpine
+      image: alpine
+      command: ["/bin/sh", "-c", "sleep 3600"]
+      volumeMounts:
+        - name: db
+          mountPath: /mnt/db
+  volumes:
+    - name: db
+      persistentVolumeClaim:
+        claimName: nextcloud-efs-pvc # cambiar por el nombre del PVC que quieras montar
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: topology.kubernetes.io/zone
+                operator: In
+                values:
+                  - us-east-1f # cambiar por la zona donde esté el PVC
+              - key: topology.kubernetes.io/region
+                operator: In
+                values:
+                  - us-east-1

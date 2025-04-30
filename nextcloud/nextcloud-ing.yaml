@@ -1,0 +1,48 @@
+# Ingress
+# Enruta el tráfico HTTP/HTTPS de clientes públicos a los servicios de Nextcloud
+# Incluye configuraciones para redirección SSL, límites de tamaño de carga y encabezados personalizados.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: nextcloud-ingress
+  namespace: nextcloud
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/certificate-arn: arn_del_certificado_ssl
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-2021-06
+
+    # Health checks
+    alb.ingress.kubernetes.io/healthcheck-host: "dominio_de_nextcloud.com"
+    alb.ingress.kubernetes.io/healthcheck-path: "/status.php"
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+    alb.ingress.kubernetes.io/healthcheck-port: traffic-port
+
+    # Stickiness for CSRF / Session stability
+    alb.ingress.kubernetes.io/target-group-attributes: stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=600
+
+    # ALB Optimizations
+    alb.ingress.kubernetes.io/backend-protocol: HTTP
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=180
+spec:
+  rules:
+    - host: dominio_de_nextcloud.com
+      http:
+        paths:
+          - path: /push
+            pathType: Prefix
+            backend:
+              service:
+                name: notify-push
+                port:
+                  number: 7867
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: nextcloud-service
+                port:
+                  number: 80

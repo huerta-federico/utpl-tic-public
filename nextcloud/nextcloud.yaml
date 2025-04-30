@@ -1,0 +1,44 @@
+# Nextcloud Deployment
+# Crea un nodo de Nextcloud basado en una imagen personalizada de Nextcloud con Apache y PHP-FPM.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nextcloud
+  namespace: nextcloud
+  labels:
+    app: nextcloud
+
+spec:
+  replicas: 1 # Escalado horizontal
+  selector:
+    matchLabels:
+      app: nextcloud
+  template:
+    metadata:
+      annotations:
+        cluster-autoscaler.kubernetes.io/safe-to-evict: "true"
+      labels:
+        app: nextcloud
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: nextcloud
+          #image: nextcloud:apache # Imagen oficial de Nextcloud
+          image: user/image:tag # Imagen personalizada de Nextcloud
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: 500m
+              memory: 512Mi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+          volumeMounts:
+            - name: nextcloud-storage
+              mountPath: /var/www/html
+      volumes:
+        - name: nextcloud-storage
+          persistentVolumeClaim:
+            claimName: nextcloud-efs-pvc # Almacenamiento persistente para datos de la aplicación

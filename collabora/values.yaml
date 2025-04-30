@@ -1,0 +1,64 @@
+replicaCount: 1
+
+ingress:
+  enabled: true
+  className: "alb"
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/target-group-attributes: stickiness.enabled=true,stickiness.lb_cookie.duration_seconds=600
+    alb.ingress.kubernetes.io/certificate-arn: arn_del_certificado_ssl
+    alb.ingress.kubernetes.io/backend-protocol: HTTP
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-TLS13-1-2-2021-06
+    alb.ingress.kubernetes.io/load-balancer-attributes: idle_timeout.timeout_seconds=60
+  hosts:
+    - host: dominio_de_collabora.com
+      paths:
+        - path: /cool/
+          pathType: Prefix
+        - path: /hosting/
+          pathType: Prefix
+        - path: /browser/
+          pathType: Prefix
+        - path: /
+          pathType: Prefix
+
+image:
+  tag: "24.04.13.2.1" # Versión de Collabora Online deseada
+
+autoscaling:
+  enabled: false
+
+collabora:
+  aliasgroups:
+    - host: "https://dominio_de_nextcloud.com:puerto"
+  extra_params: --o:ssl.enable=false --o:ssl.termination=true --o:num_prespawn_children=4 --o:per_document.max_concurrency=1 --o:net.post_allow.host[0]=192\.168\.0\.0/16
+  server_name: dominio_de_collabora.com:puerto
+  # for production enviroment we recommend appending `extra_params` with `--o:num_prespawn_children=4`. It defines number of child processes to keep started in advance and waiting for new clients
+  # Credenciales admin. Panel admin está en https://https://dominio_de_collabora.com:443/browser/dist/admin/admin.html
+  existingSecret:
+    enabled: true
+    secretName: "collabora-secret"
+    usernameKey: "username"
+    passwordKey: "password"
+
+resources:
+  limits:
+    cpu: "1500m"
+    memory: "2048Mi"
+  requests:
+    cpu: "1000m"
+    memory: "1024Mi"
+# for production enviroment we recommend the following resource values
+# resources:
+# limits:
+# cpu: "8000m"
+# memory: "8000Mi"
+# requests:
+# cpu: "4000m"
+# memory: "6000Mi"
+# helm upgrade --namespace collabora collabora-online collabora/collabora-online -f values.yaml
+# helm install --namespace collabora collabora-online collabora/collabora-online -f values.yaml

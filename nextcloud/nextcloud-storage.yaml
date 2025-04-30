@@ -1,0 +1,30 @@
+# nextcloud-efs-pv.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nextcloud-efs-pv
+spec:
+  capacity:
+    storage: 5Gi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: efs-sc
+  csi:
+    driver: efs.csi.aws.com
+    volumeHandle: FileSystemID::AccessPointID # EFS FileSystemID::AccessPointID
+---
+# nextcloud-efs-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nextcloud-efs-pvc
+  namespace: nextcloud
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: efs-sc
+  resources:
+    requests:
+      storage: 5Gi

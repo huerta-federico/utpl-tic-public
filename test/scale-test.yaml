@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scaling-test
+  namespace: testing
+spec:
+  replicas: 3 # kubectl scale deploy scaling-test -n testing --replicas=0
+  selector:
+    matchLabels:
+      app: scaling-test
+  template:
+    metadata:
+      labels:
+        app: scaling-test
+    spec:
+      containers:
+        - name: busybox
+          image: busybox:1.28
+          command: ["/bin/sh", "-c"]
+          args:
+            - >
+              while true; do
+                wget -q -O- http://nextcloud-service.nextcloud.svc.cluster.local;
+                wget -q -O- http://nextcloud-service.nextcloud.svc.cluster.local/index.php/login;
+                wget -q -O- http://nextcloud-service.nextcloud.svc.cluster.local/index.php/notifications/poll;
+                sleep 0.01;
+              done

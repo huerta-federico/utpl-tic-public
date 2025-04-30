@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: talk-hpb
+  namespace: talk
+  labels:
+    app: talk-hpb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: talk-hpb
+  template:
+    metadata:
+      labels:
+        app: talk-hpb
+    spec:
+      volumes:
+        - name: janus-config-volume
+          configMap:
+            name: talk-janus-config
+        - name: janus-config-generated
+          emptyDir: {}
+      initContainers:
+        - name: janus-config-init
+          image: busybox:1.36
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              cp /config/janus.jcfg /generated/janus.jcfg
+              sed -i "s|__TURN_REST_API_KEY__|${TURN_REST_API_KEY}|g" /generated/janus.jcfg
+          env:
+            - name: TURN_REST_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: talk-secret
+                  key: TURN_REST_API_KEY
+          volumeMounts:
+            - name: janus-config-volume
+              mountPath: /config
+            - name: janus-config-generated
+              mountPath: /generated
+      containers:
+        - name: talk-hpb
+          image: user/image:tag
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8081
+              name: signaling
+              protocol: TCP
+          env:
+            - name: NC_DOMAIN
+              value: "dominio_de_nextcloud.com"
+            - name: TALK_PORT
+              value: "3478"
+            - name: TALK_HOST
+              value: "dominio_de_turn.com"
+            - name: TURN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: talk-secret
+                  key: TURN_SECRET
+            - name: SIGNALING_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: talk-secret
+                  key: SIGNALING_SECRET
+            - name: INTERNAL_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: talk-secret
+                  key: INTERNAL_SECRET
+          volumeMounts:
+            - name: janus-config-generated
+              mountPath: /usr/local/etc/janus/janus.jcfg
+              subPath: janus.jcfg
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "256Mi"
+            limits:
+              cpu: "1000m"
+              memory: "512Mi"

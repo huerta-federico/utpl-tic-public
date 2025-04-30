@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: notify-push
+  namespace: nextcloud
+  labels:
+    app: notify-push
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: notify-push
+  template:
+    metadata:
+      labels:
+        app: notify-push
+    spec:
+      containers:
+        - name: notify-push
+          image: user/image:tag
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 7867
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 128Mi
+          livenessProbe:
+            tcpSocket:
+              port: 7867
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 5
+          readinessProbe:
+            tcpSocket:
+              port: 7867
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+          securityContext:
+            runAsUser: UID
+            runAsGroup: GID
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+          volumeMounts:
+            - name: nextcloud-storage
+              mountPath: /var/www/html
+              readOnly: true
+          env:
+            - name: NEXTCLOUD_URL
+              value: http://servicio-local.my-cluster.svc.cluster.local
+      volumes:
+        - name: nextcloud-storage
+          persistentVolumeClaim:
+            claimName: nextcloud-efs-pvc
