@@ -45,7 +45,7 @@ command:
   - --stderrthreshold=info
   - --cloud-provider=aws
   - --skip-nodes-with-local-storage=false
-  - --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/my-nextcloud
+  - --node-group-auto-discovery=asg:tag=k8s.io/cluster-autoscaler/enabled,k8s.io/cluster-autoscaler/my-cluster
 ```
 
 ```yaml
