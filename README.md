@@ -4,6 +4,18 @@ Este repositorio provee los recursos e instrucciones para implementar un desplie
 
 Es importante realizar los ajustes necesarios para adaptar el despliegue para cada caso de implementación específico, como los dominios web, puertos, ARNs de AWS, etc.
 
+## Avisos
+
+Este proyecto es de carácter personal y académico. No está afiliado, respaldado ni mantenido por Nextcloud GmbH ni por ninguna de sus entidades asociadas.
+
+Su propósito es exclusivamente educativo y experimental, y se comparte con la intención de servir como referencia para quienes estén explorando despliegues auto-gestionados de Nextcloud sobre infraestructura en la nube.
+
+No se ofrecen garantías de funcionamiento, seguridad o soporte. Es probable que existan oportunidades de mejora, por lo que cualquier sugerencia, corrección o contribución es bienvenida.
+
+### Licencia
+
+Este proyecto está disponible bajo la Licencia MIT, lo que significa que puedes utilizar, modificar y distribuir libremente el código, siempre y cuando mantengas la atribución al autor original. El software se proporciona "tal cual", sin garantías de ningún tipo, y se utiliza bajo tu propia responsabilidad.
+
 ## Estructura del proyecto
 
 ```plaintext
