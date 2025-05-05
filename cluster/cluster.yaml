@@ -25,7 +25,7 @@ addons:
 
 managedNodeGroups:
   - name: node-group
-    instanceType: t3.large
+    instanceType: t3.medium
     desiredCapacity: 3
     minSize: 3
     maxSize: 6

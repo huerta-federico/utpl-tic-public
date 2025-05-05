@@ -4,6 +4,8 @@ Este repositorio provee los recursos e instrucciones para implementar un desplie
 
 Es importante realizar los ajustes necesarios para adaptar el despliegue para cada caso de implementación específico, como los dominios web, puertos, ARNs de AWS, etc.
 
+La arquitectura general del despliegue se muestra en `info/Diagrama de microservicios.png`
+
 ## Avisos
 
 Este proyecto es de carácter personal y académico. No está afiliado, respaldado ni mantenido por Nextcloud GmbH ni por ninguna de sus entidades asociadas.
@@ -58,6 +60,7 @@ Este proyecto está disponible bajo la Licencia MIT, lo que significa que puedes
 │   └── docker.md
 ├── info
 │   ├── arquitectura.md
+│   ├── Diagrama de microservicios.png
 │   └── preparacion.md
 ├── logs
 │   └── ...
