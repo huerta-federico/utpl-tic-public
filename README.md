@@ -6,7 +6,11 @@ Es importante realizar los ajustes necesarios para adaptar el despliegue para ca
 
 La arquitectura general del despliegue se muestra en `info/Diagrama de microservicios.png`
 
-## Avisos
+Este proyecto tomó inspiración en el artículo "Nextcloud scale-out using Kubernetes" publicado por Marko Skender.
+
+<https://faun.pub/nextcloud-scale-out-using-kubernetes-93c9cac9e493>
+
+## Aviso
 
 Este proyecto es de carácter personal y académico. No está afiliado, respaldado ni mantenido por Nextcloud GmbH ni por ninguna de sus entidades asociadas.
 

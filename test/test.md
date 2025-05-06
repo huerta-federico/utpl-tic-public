@@ -146,3 +146,9 @@ Modificar la configuración de ingress-controller
 ```bash
 kubectl edit configmap ingress-nginx-controller -n ingress-nginx
 ```
+
+# Ver los recursos en todos los namespaces
+
+```bash
+kubectl get deploy --all-namespaces
+```
